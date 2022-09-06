@@ -1,4 +1,4 @@
-import os, sys, math
+import os, sys, math, itertools
 
 class vec2:
     def __init__(self, x = None, y = None):
@@ -73,6 +73,108 @@ class vec2:
     
     def tuple(self) -> tuple:
         return (self.x, self.y)
+
+class vec3:
+    def __init__(self, x = None, y = None, z = None):
+        if x is None and y is None and z is None:
+            self.x = 0
+            self.y = 0
+            self.z = 0
+        elif x is not None and y is None and z is None:
+            if type(x) in [int, float]:
+                self.x = self.y = self.z = x
+            else:
+                self.x = x[0]
+                self.y = x[1]
+                self.z = x[2]
+        elif x is not None and y is not None and z is not None:
+            self.x = x
+            self.y = y
+            self.z = z
+    
+    def __repr__(self) -> str:
+        return f"vec3({self.x}, {self.y}, {self.z})"
+    
+    def __add__(self, o: 'vec3') -> 'vec3':
+        return vec3(self.x + o.x, self.y + o.y, self.z + o.z)
+    def __sub__(self, o: 'vec3') -> 'vec3':
+        return vec3(self.x - o.x, self.y - o.y, self.z - o.z)
+    def __mul__(self, o: 'vec3') -> 'vec3':
+        return vec3(self.x * o.x, self.y * o.y, self.z * o.z)
+    def __truediv__(self, o: 'vec3') -> 'vec3':
+        return vec3(self.x / o.x, self.y / o.y, self.z / o.z)
+    def __floordiv__(self, o: 'vec3') -> 'vec3':
+        return vec3(self.x // o.x, self.y // o.y, self.z // o.z)
+    def __pow__(self, o: 'vec3') -> 'vec3':
+        return vec3(self.x ** o.x, self.y ** o.y, self.z ** o.z)
+    
+    def __iadd__(self, o: 'vec3') -> 'vec3':
+        self.x += o.x
+        self.y += o.y
+        self.z += o.z
+        return self
+    def __isub__(self, o: 'vec3') -> 'vec3':
+        self.x -= o.x
+        self.y -= o.y
+        self.z -= o.z
+        return self
+    def __imul__(self, o: 'vec3') -> 'vec3':
+        self.x *= o.x
+        self.y *= o.y
+        self.z *= o.z
+        return self
+    def __itruediv__(self, o: 'vec3') -> 'vec3':
+        self.x /= o.x
+        self.y /= o.y
+        self.z /= o.z
+        return self
+    def __ifloordiv__(self, o: 'vec3') -> 'vec3':
+        self.x //= o.x
+        self.y //= o.y
+        self.z //= o.z
+        return self
+    def __ipow__(self, o: 'vec3') -> 'vec3':
+        self.x **= o.x
+        self.y **= o.y
+        self.z **= o.z
+        return self
+    
+    def __neg__(self) -> 'vec3':
+        return vec3(-self.x, -self.y, -self.z)
+    def __abs__(self) -> 'vec3':
+        return vec3(abs(self.x), abs(self.y), abs(self.z))
+    
+    def __eq__(self, o: 'vec3') -> bool:
+        return self.x == o.x and self.y == o.y and self.z == o.z
+    
+    def __hash__(self) -> int:
+        return hash((self.x, self.y, self.z))
+    
+    def __len__(self):
+        return math.sqrt(self.x * self.x + self.y * self.y + self.z * self.z)
+    def distance(self, o: 'vec3'):
+        return len(self - o)
+    def manhattan(self, o: 'vec3'):
+        return abs(abs(self) - abs(o))
+    
+    def in_bounds(self, a: 'vec3', b: 'vec3'):
+        lx = min(a.x, b.x)
+        ux = max(a.x, b.x)
+
+        ly = min(a.y, b.y)
+        uy = max(a.y, b.y)
+
+        lz = min(a.z, b.z)
+        uz = max(a.z, b.z)
+
+        return self.x >= lx and self.x <= ux and self.y >= ly and self.y <= uy and self.z >= lz and self.z <= uz
+    
+    def tuple(self) -> tuple:
+        return (self.x, self.y, self.z)
+    
+    def rotations(self):
+        for x, y, z in itertools.product((1, -1), (1, -1), (1, -1)):
+            yield vec3(self.x * x, self.y * y, self.z * z)
 
 class BitListReader:
     def __init__(self, bl: 'BitList'):
