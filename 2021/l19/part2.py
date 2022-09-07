@@ -1,6 +1,6 @@
 from ..advent import Advent, vec3
 
-advent = Advent(19, 1)
+advent = Advent(19, 2)
 
 def resolve(i: int, j: int, scanners: list) -> tuple:
     for rotation in vec3.rotation_functions():
@@ -30,4 +30,9 @@ while visit_queue:
             unmatched.remove(j)
             scanner_positions[j] = diff
 
-print(len(set.union(*scanners)))
+max_distance = 0
+for p1 in scanner_positions:
+    for p2 in scanner_positions:
+        max_distance = max(max_distance, p1.manhattan(p2))
+
+print(max_distance)

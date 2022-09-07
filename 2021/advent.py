@@ -60,7 +60,8 @@ class vec2:
     def distance(self, o: 'vec2'):
         return len(self - o)
     def manhattan(self, o: 'vec2'):
-        return abs(abs(self) - abs(o))
+        diff = abs(self - o)
+        return diff.x + diff.y
     
     def in_bounds(self, a: 'vec2', b: 'vec2'):
         lx = min(a.x, b.x)
@@ -161,7 +162,8 @@ class vec3:
     def distance(self, o: 'vec3'):
         return len(self - o)
     def manhattan(self, o: 'vec3'):
-        return abs(abs(self) - abs(o))
+        diff = abs(self - o)
+        return diff.x + diff.y + diff.z
     
     def in_bounds(self, a: 'vec3', b: 'vec3'):
         lx = min(a.x, b.x)
@@ -179,9 +181,8 @@ class vec3:
         return (self.x, self.y, self.z)
     
     def rotations(self) -> 'vec3':
-        for xm, ym, zm in itertools.product((1, -1), (1, -1), (1, -1)):
-            for x, y, z in itertools.permutations((self.x, self.y, self.z), 3):
-                yield vec3(x * xm, y * ym, z * zm)
+        for mat in vec3.rotation_matrices():
+            yield mat * self
     
     @staticmethod
     def rotation_matrices() -> 'mat3':
@@ -192,6 +193,11 @@ class vec3:
                 mat[1][y] = ym
                 mat[2][z] = zm
                 yield mat3(mat)
+    
+    @staticmethod
+    def rotation_functions():
+        for mat in vec3.rotation_matrices():
+            yield lambda vec: mat * vec
 
 class mat3:
     def __init__(self, data: list = None):
