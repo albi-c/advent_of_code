@@ -99,8 +99,11 @@ class vec3:
         return vec3(self.x + o.x, self.y + o.y, self.z + o.z)
     def __sub__(self, o: 'vec3') -> 'vec3':
         return vec3(self.x - o.x, self.y - o.y, self.z - o.z)
-    def __mul__(self, o: 'vec3') -> 'vec3':
-        return vec3(self.x * o.x, self.y * o.y, self.z * o.z)
+    def __mul__(self, o) -> 'vec3':
+        if isinstance(o, mat3):
+            return o * self
+        else:
+            return vec3(self.x * o.x, self.y * o.y, self.z * o.z)
     def __truediv__(self, o: 'vec3') -> 'vec3':
         return vec3(self.x / o.x, self.y / o.y, self.z / o.z)
     def __floordiv__(self, o: 'vec3') -> 'vec3':
@@ -119,9 +122,12 @@ class vec3:
         self.z -= o.z
         return self
     def __imul__(self, o: 'vec3') -> 'vec3':
-        self.x *= o.x
-        self.y *= o.y
-        self.z *= o.z
+        if isinstance(o, mat3):
+            self = self * o
+        else:
+            self.x *= o.x
+            self.y *= o.y
+            self.z *= o.z
         return self
     def __itruediv__(self, o: 'vec3') -> 'vec3':
         self.x /= o.x
@@ -172,9 +178,62 @@ class vec3:
     def tuple(self) -> tuple:
         return (self.x, self.y, self.z)
     
-    def rotations(self):
-        for x, y, z in itertools.product((1, -1), (1, -1), (1, -1)):
-            yield vec3(self.x * x, self.y * y, self.z * z)
+    def rotations(self) -> 'vec3':
+        for xm, ym, zm in itertools.product((1, -1), (1, -1), (1, -1)):
+            for x, y, z in itertools.permutations((self.x, self.y, self.z), 3):
+                yield vec3(x * xm, y * ym, z * zm)
+    
+    @staticmethod
+    def rotation_matrices() -> 'mat3':
+        for xm, ym, zm in itertools.product((1, -1), (1, -1), (1, -1)):
+            for x, y, z in itertools.permutations((0, 1, 2), 3):
+                mat = mat3.empty_list()
+                mat[0][x] = xm
+                mat[1][y] = ym
+                mat[2][z] = zm
+                yield mat3(mat)
+
+class mat3:
+    def __init__(self, data: list = None):
+        self.data = data if data is not None else mat3.identity_list()
+    
+    def __repr__(self) -> str:
+        return f"mat3({self.data})"
+    
+    @staticmethod
+    def identity() -> 'mat3':
+        return mat3(mat3.identity_list())
+    
+    @staticmethod
+    def identity_list() -> list:
+        return [[1, 0, 0],
+                [0, 1, 0],
+                [0, 0, 1]]
+    
+    @staticmethod
+    def empty() -> 'mat3':
+        return mat3(mat3.empty_list())
+
+    @staticmethod
+    def empty_list() -> list:
+        return [[0, 0, 0],
+                [0, 0, 0],
+                [0, 0, 0]]
+    
+    @staticmethod
+    def scale(scale: vec3) -> 'mat3':
+        return mat3([[scale.x, 0, 0],
+                     [0, scale.y, 0],
+                     [0, 0, scale.z]])
+
+    def __mul__(self, o: vec3) -> vec3:
+        return vec3([sum(map(lambda p: p[0] * p[1], zip(self.data[i], (o.x, o.y, o.z)))) for i in range(3)])
+
+    def __eq__(self, o) -> bool:
+        return self.data == o.data
+
+    def __hash__(self):
+        return hash(tuple([tuple(row) for row in self.data]))
 
 class BitListReader:
     def __init__(self, bl: 'BitList'):
