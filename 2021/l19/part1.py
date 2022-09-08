@@ -30,4 +30,4 @@ while visit_queue:
             unmatched.remove(j)
             scanner_positions[j] = diff
 
-print(len(set.union(*scanners)))
+advent.solution(len(set.union(*scanners)))

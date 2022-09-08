@@ -12,6 +12,9 @@ class vec2:
             self.x = x
             self.y = y
     
+    def __repr__(self) -> str:
+        return f"vec2({self.x}, {self.y})"
+    
     def __add__(self, o: 'vec2') -> 'vec2':
         return vec2(self.x + o.x, self.y + o.y)
     def __sub__(self, o: 'vec2') -> 'vec2':

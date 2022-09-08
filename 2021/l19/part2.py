@@ -35,4 +35,4 @@ for p1 in scanner_positions:
     for p2 in scanner_positions:
         max_distance = max(max_distance, p1.manhattan(p2))
 
-print(max_distance)
+advent.solution(max_distance)
