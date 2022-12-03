@@ -401,11 +401,11 @@ class AdventReader:
 
 class AdventUtil:
     @staticmethod
-    def flatten(lst):
+    def flatten(lst: list):
         return [val for group in lst for val in group]
 
     @staticmethod
-    def remove_duplicates(lst):
+    def remove_duplicates(lst: list):
         tmp = []
         
         for e in lst:
@@ -415,18 +415,23 @@ class AdventUtil:
         return tmp
 
     @staticmethod
-    def pairs_overlay(lst):
+    def pairs_overlay(lst: list):
         prev = lst[0]
         for el in lst[1:]:
             yield prev, el
             prev = el
 
     @staticmethod
-    def product(lst):
+    def product(lst: list[int]) -> int:
         n = 1
         for x in lst:
             n *= x
         return n
+
+    @staticmethod
+    def chunks(lst: list, size: int) -> list:
+        for i in range(0, len(lst), size):
+            yield lst[i:i + size]
 
 
 class Advent:
