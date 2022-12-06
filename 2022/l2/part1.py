@@ -28,8 +28,4 @@ def calc_score(move: list[int]) -> int:
 
 data = advent.read.lines(lambda ln: [SHAPES[shape] for shape in ln.split()])
 
-score = 0
-for m in data:
-    score += calc_score(m)
-
-advent.solution(score)
+advent.solution(sum(map(calc_score, data)))
