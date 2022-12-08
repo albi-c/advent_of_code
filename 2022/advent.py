@@ -330,6 +330,9 @@ class Grid:
     
     def set(self, key: tuple, value):
         self.data[key[1]][key[0]] = value
+
+    def col(self, i: int):
+        return [row[i] for row in self.data]
     
     def __getitem__(self, key: tuple):
         return self.get(key)
