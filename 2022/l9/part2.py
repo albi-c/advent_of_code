@@ -15,16 +15,16 @@ DIRECTIONS = {
 
 moves = advent.util.flatten([DIRECTIONS[ln[0]] for _ in range(int(ln[2:]))] for ln in advent.read.lines())
 
-tail = vec2(0, 0)
-head = vec2(0, 0)
+segments = [vec2(0, 0) for _ in range(10)]
 positions = {vec2(0, 0)}
 for move in moves:
-    head += move
-    if abs(head.x - tail.x) > 1 or abs(head.y - tail.y) > 1:
-        diff = head - tail
-        tail.x += diff.x // abs(diff.x) if diff.x else 0
-        tail.y += diff.y // abs(diff.y) if diff.y else 0
+    segments[0] += move
+    for s1, s2 in advent.util.pairs_overlay(segments):
+        if abs(s1.x - s2.x) > 1 or abs(s1.y - s2.y) > 1:
+            diff = s1 - s2
+            s2.x += diff.x // abs(diff.x) if diff.x else 0
+            s2.y += diff.y // abs(diff.y) if diff.y else 0
 
-    positions.add(copy(tail))
+    positions.add(copy(segments[-1]))
 
 advent.solution(len(positions))
