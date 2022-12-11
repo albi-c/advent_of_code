@@ -285,7 +285,7 @@ class BitListReader:
         self.bl.index += 1
         return self.bl[self.bl.index]
     
-    def bits(self, n: int) -> bool | list:
+    def bits(self, n: int):
         self.bl.index += n
         return self.bl[self.bl.index-n+1:self.bl.index+1]
     
@@ -314,7 +314,7 @@ class BitList:
     def __setitem__(self, pos: int, val: bool):
         self.data[pos] = val
     
-    def append(self, val: bool | int):
+    def append(self, val):
         self.data.append(bool(val))
 
 
