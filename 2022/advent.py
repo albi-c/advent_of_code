@@ -10,8 +10,7 @@ class vec2:
             self.x = 0
             self.y = 0
         elif x is not None and y is None:
-            self.x = x[0]
-            self.y = x[1]
+            self.x, self.y = x
         elif x is not None and y is not None:
             self.x = x
             self.y = y
