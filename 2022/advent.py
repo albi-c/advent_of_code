@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 import itertools
 import math
 import os
 import sys
+from typing import TypeVar, Generic
 
 
 class vec2:
@@ -364,6 +367,78 @@ class Grid:
                 print("##" if [x, y] in points else "..", end="")
             
             print()
+
+
+class GraphNode:
+    name: str
+    connections: dict[GraphNode, int]
+
+    def __init__(self, name: str):
+        self.name = name
+        self.connections = {}
+
+    def __hash__(self):
+        return hash(self.name)
+
+    def __repr__(self):
+        return f"[{self.name} -> {', '.join(str(dist) + ' ' + node.name for node, dist in self.connections.items())}]"
+
+    def __eq__(self, other: GraphNode):
+        return self.name == other.name
+
+    def connect(self, to: GraphNode, cost: int = 1):
+        if to == self:
+            return
+
+        self.connections[to] = min(self.connections.get(to, cost), cost)
+        if self not in to.connections or to.connections[self] > cost:
+            to.connect(self, cost)
+
+    def disconnect(self, from_: GraphNode):
+        if from_ in self.connections:
+            del self.connections[from_]
+
+    def connected(self, to: GraphNode) -> bool:
+        return to in self.connections
+
+    def connection(self, to: GraphNode) -> int | None:
+        return self.connections.get(to)
+
+
+T = TypeVar("T", bound=GraphNode)
+
+
+class Graph(Generic[T]):
+    nodes: dict[str, T] = {}
+
+    def __init__(self):
+        self.nodes = {}
+
+    def __getitem__(self, name: str) -> T:
+        return self.nodes[name]
+
+    def __setitem__(self, name: str, node: T):
+        self.nodes[name] = node
+
+    def __delitem__(self, name: str):
+        if name in self.nodes:
+            for node in self.nodes.values():
+                node.disconnect(self.nodes[name])
+
+            del self.nodes[name]
+
+    def __hash__(self):
+        return hash(tuple((name, node) for name, node in self.nodes.items()))
+
+    def items(self):
+        return self.nodes.items()
+
+    def add(self, node: T):
+        self.nodes[node.name] = node
+
+    def remove(self, node: T):
+        if node.name in self.nodes:
+            del self.nodes[node.name]
 
 
 class AdventReader:
