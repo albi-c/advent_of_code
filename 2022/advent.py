@@ -92,7 +92,7 @@ class vec2:
         ly = min(a.y, b.y)
         uy = max(a.y, b.y)
 
-        return lx <= self.x <= ux and self.y >= ly and self.y <= uy
+        return lx <= self.x <= ux and ly <= self.y <= uy
     
     def tuple(self) -> tuple:
         return self.x, self.y
