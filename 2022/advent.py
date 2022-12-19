@@ -236,6 +236,114 @@ class vec3:
             yield lambda vec: mat * vec
 
 
+class vec4:
+    def __init__(self, x=None, y=None, z=None, w=None):
+        if x is None and y is None and z is None and w is None:
+            self.x = self.y = self.z = self.w = 0
+        elif x is not None and y is None and z is None and w is None:
+            if type(x) in [int, float]:
+                self.x = self.y = self.z = self.w = x
+            else:
+                self.x, self.y, self.z, self.w = x
+        elif x is not None and y is not None and z is not None and w is not None:
+            self.x = x
+            self.y = y
+            self.z = z
+            self.w = w
+
+    def __repr__(self) -> str:
+        return f"vec4({self.x}, {self.y}, {self.z}, {self.w})"
+
+    def __add__(self, o: 'vec4') -> 'vec4':
+        return vec4(self.x + o.x, self.y + o.y, self.z + o.z, self.w + o.w)
+
+    def __sub__(self, o: 'vec4') -> 'vec4':
+        return vec4(self.x - o.x, self.y - o.y, self.z - o.z, self.w - o.w)
+
+    def __mul__(self, o: 'vec4') -> 'vec4':
+        return vec4(self.x * o.x, self.y * o.y, self.z * o.z, self.w * o.w)
+
+    def __truediv__(self, o: 'vec4') -> 'vec4':
+        return vec4(self.x / o.x, self.y / o.y, self.z / o.z, self.w / o.w)
+
+    def __floordiv__(self, o: 'vec4') -> 'vec4':
+        return vec4(self.x // o.x, self.y // o.y, self.z // o.z, self.w // o.w)
+
+    def __pow__(self, o: 'vec4') -> 'vec4':
+        return vec4(self.x ** o.x, self.y ** o.y, self.z ** o.z, self.w ** o.w)
+
+    def __iadd__(self, o: 'vec4') -> 'vec4':
+        self.x += o.x
+        self.y += o.y
+        self.z += o.z
+        self.w += o.w
+        return self
+
+    def __isub__(self, o: 'vec4') -> 'vec4':
+        self.x -= o.x
+        self.y -= o.y
+        self.z -= o.z
+        self.w -= o.w
+        return self
+
+    def __imul__(self, o: 'vec4') -> 'vec4':
+        self.x *= o.x
+        self.y *= o.y
+        self.z *= o.z
+        self.w *= o.w
+        return self
+
+    def __itruediv__(self, o: 'vec4') -> 'vec4':
+        self.x /= o.x
+        self.y /= o.y
+        self.z /= o.z
+        self.w /= o.w
+        return self
+
+    def __ifloordiv__(self, o: 'vec4') -> 'vec4':
+        self.x //= o.x
+        self.y //= o.y
+        self.z //= o.z
+        self.w //= o.w
+        return self
+
+    def __ipow__(self, o: 'vec4') -> 'vec4':
+        self.x **= o.x
+        self.y **= o.y
+        self.z **= o.z
+        self.w **= o.w
+        return self
+
+    def __neg__(self) -> 'vec4':
+        return vec4(-self.x, -self.y, -self.z, -self.w)
+
+    def __abs__(self) -> 'vec4':
+        return vec4(abs(self.x), abs(self.y), abs(self.z), abs(self.w))
+
+    def __eq__(self, o: 'vec4') -> bool:
+        return self.x == o.x and self.y == o.y and self.z == o.z and self.w == o.w
+
+    def __hash__(self) -> int:
+        return hash(self.tuple())
+
+    def length(self):
+        return math.sqrt(self.x * self.x + self.y * self.y + self.z * self.z + self.w * self.w)
+
+    def distance(self, o: 'vec4'):
+        return (self - o).length()
+
+    def manhattan(self, o: 'vec4'):
+        diff = abs(self - o)
+        return diff.x + diff.y + diff.z + diff.w
+
+    def tuple(self) -> tuple:
+        return self.x, self.y, self.z, self.w
+
+    @staticmethod
+    def unit(index: int) -> 'vec4':
+        return vec4(0 if i != index else 1 for i in range(4))
+
+
 class mat3:
     def __init__(self, data: list = None):
         self.data = data if data is not None else mat3.identity_list()
