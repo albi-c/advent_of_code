@@ -323,6 +323,18 @@ class vec4:
     def __eq__(self, o: 'vec4') -> bool:
         return self.x == o.x and self.y == o.y and self.z == o.z and self.w == o.w
 
+    def __gt__(self, o: 'vec4') -> bool:
+        return self.x > o.x and self.y > o.y and self.z > o.z and self.w > o.w
+
+    def __lt__(self, o: 'vec4') -> bool:
+        return self.x < o.x and self.y < o.y and self.z < o.z and self.w < o.w
+
+    def __ge__(self, o: 'vec4') -> bool:
+        return self.x >= o.x and self.y >= o.y and self.z >= o.z and self.w >= o.w
+
+    def __le__(self, o: 'vec4') -> bool:
+        return self.x <= o.x and self.y <= o.y and self.z <= o.z and self.w <= o.w
+
     def __hash__(self) -> int:
         return hash(self.tuple())
 
