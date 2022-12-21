@@ -566,7 +566,9 @@ class AdventReader:
         self.advent = advent
         self.level = self.advent.level
 
-        self.ipath = os.path.join(os.path.dirname(__file__), f"l{str(self.level)}", "input.txt")
+        input_file = "test_input.txt" if os.environ.get("AOC_TEST_INPUT") == "true" else "input.txt"
+
+        self.ipath = os.path.join(os.path.dirname(__file__), f"l{str(self.level)}", input_file)
     
     def lines(self, convert = lambda x: x):
         return [convert(val.strip()) for val in open(self.ipath).readlines()]

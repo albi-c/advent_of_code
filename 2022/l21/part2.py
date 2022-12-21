@@ -10,49 +10,54 @@ OPERATORS = {
     "+": operator.add,
     "-": operator.sub,
     "*": operator.mul,
-    "/": operator.floordiv
+    "/": operator.truediv
 }
 
 INVERSE_OPERATORS = {
     "+": operator.sub,
     "-": operator.add,
-    "*": operator.floordiv,
+    "*": operator.truediv,
     "/": operator.mul
 }
 
 
-Operation = tuple[int | None, str, int | None]
-
-
-"""
-100
-
-* 10
-10 /
-- 3
-
-x
-"""
-
-
 class Unknown:
-    operations: list[Operation]
+    operations: list[tuple]
 
-    def __init__(self, operations: list[Operation]):
+    def __init__(self, operations: list[tuple]):
         self.operations = operations
 
     def resolve(self, value: int) -> int:
         for a, op, b in self.operations[::-1]:
-            if a is None:
-                if op in ("/", "-"):
-                    value = OPERATORS[op](value, b)
-                else:
-                    value = INVERSE_OPERATORS[op](value, b)
+            print(value, "|", a, op, b)
+            # a, b = b, a
+
+            if b is None:
+                if op == "+":
+                    value = a - value
+                elif op == "-":
+                    value = a + value
+                elif op == "*":
+                    value = a / value
+                elif op == "/":
+                    value = a * value
+
+                # print(f"value = {a} {op} x{value}", end=" ")
+                # value = INVERSE_OPERATORS[op](a, value)
+                # print(f"-> {value}")
             else:
-                # if op in ("/", "-"):
-                #     value = OPERATORS[op](a, value)
-                # else:
-                value = INVERSE_OPERATORS[op](a, value)
+                if op == "+":
+                    value -= b
+                elif op == "-":
+                    value += b
+                elif op == "*":
+                    value /= b
+                elif op == "/":
+                    value *= b
+
+                # print(f"value = x{value} {op} {b}", end=" ")
+                # value = INVERSE_OPERATORS[op](value, b)
+                # print(f"-> {value}")
 
         return value
 
@@ -65,7 +70,7 @@ class Unknown:
     def __mul__(self, other: int) -> Unknown:
         return Unknown(self.operations + [(other, "*", None)])
 
-    def __floordiv__(self, other: int) -> Unknown:
+    def __truediv__(self, other: int) -> Unknown:
         return Unknown(self.operations + [(other, "/", None)])
 
     def __radd__(self, other: int) -> Unknown:
@@ -77,7 +82,7 @@ class Unknown:
     def __rmul__(self, other: int) -> Unknown:
         return Unknown(self.operations + [(None, "*", other)])
 
-    def __rfloordiv__(self, other: int) -> Unknown:
+    def __rtruediv__(self, other: int) -> Unknown:
         return Unknown(self.operations + [(None, "/", other)])
 
 
@@ -87,10 +92,22 @@ def root_func(spl: list[str]):
         b = m[spl[2]](m)
 
         if isinstance(a, Unknown):
-            return a.resolve(b)
+            resolved = a.resolve(b)
 
         else:
-            return b.resolve(a)
+            resolved = b.resolve(a)
+
+        # binary search by hand
+        resolved = 3219579395609
+
+        m["humn"] = lambda _: resolved
+
+        if m[spl[0]](m) != m[spl[2]](m):
+            print("Doesn't match!", m[spl[0]](m), m[spl[2]](m), sep="\n")
+        else:
+            print("Matches!")
+
+        return resolved
 
     return inner
 
