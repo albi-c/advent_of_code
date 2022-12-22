@@ -566,7 +566,7 @@ class AdventReader:
         self.advent = advent
         self.level = self.advent.level
 
-        input_file = "test_input.txt" if os.environ.get("AOC_TEST_INPUT") == "true" else "input.txt"
+        input_file = "test_input.txt" if advent.is_test else "input.txt"
 
         self.ipath = os.path.join(os.path.dirname(__file__), f"l{str(self.level)}", input_file)
     
@@ -636,6 +636,8 @@ class AdventUtil:
 class Advent:
     def __init__(self, level: int):
         self.level = level
+        self.is_test = os.environ.get("AOC_TEST_INPUT") == "true"
+
         self.read = AdventReader(self)
         self.util = AdventUtil()
 
