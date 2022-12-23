@@ -344,6 +344,18 @@ class vec4:
     def __hash__(self) -> int:
         return hash(self.tuple())
 
+    def __getitem__(self, item: int):
+        if item == 0:
+            return self.x
+        elif item == 1:
+            return self.y
+        elif item == 2:
+            return self.z
+        elif item == 3:
+            return self.w
+
+        raise IndexError("Invalid vector index")
+
     def length(self):
         return math.sqrt(self.x * self.x + self.y * self.y + self.z * self.z + self.w * self.w)
 
