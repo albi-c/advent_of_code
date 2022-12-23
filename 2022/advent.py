@@ -74,8 +74,14 @@ class vec2:
 
     def __abs__(self) -> 'vec2':
         return vec2(abs(self.x), abs(self.y))
+
+    def __eq__(self, o: 'vec2'):
+        return self.x == o.x and self.y == o.y
+
+    def __hash__(self):
+        return hash(self.tuple())
     
-    def __len__(self):
+    def length(self):
         return math.sqrt(self.x * self.x + self.y * self.y)
 
     def distance(self, o: 'vec2'):
