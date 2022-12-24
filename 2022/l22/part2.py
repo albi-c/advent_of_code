@@ -148,7 +148,7 @@ else:
             lambda pos: vec2(49, pos.x + 100),
             lambda pos: vec2(49, pos.y),
             lambda pos: vec2(pos.x, 99),
-            lambda d_: d_ if d_ & 1 else 2
+            lambda d_: 3 if d_ == 3 else 2
         ],
         [
             lambda pos: vec2(pos.y - 100, 149),
@@ -189,7 +189,5 @@ for move in moves:
                     d = nd
                 else:
                     raise RuntimeError(f"Invalid wrap-around ({p} -> {np} | {d} -> {nd})")
-
-print(p, d)
 
 advent.solution((p.y + 1) * 1000 + (p.x + 1) * 4 + d)
