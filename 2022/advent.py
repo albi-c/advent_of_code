@@ -38,6 +38,9 @@ class vec2:
 
     def __pow__(self, o: 'vec2') -> 'vec2':
         return vec2(self.x ** o.x, self.y ** o.y)
+
+    def __matmul__(self, o: 'vec2') -> 'vec2':
+        return vec2(self.x % o.x, self.y % o.y)
     
     def __iadd__(self, o: 'vec2') -> 'vec2':
         self.x += o.x
@@ -67,6 +70,11 @@ class vec2:
     def __ipow__(self, o: 'vec2') -> 'vec2':
         self.x **= o.x
         self.y **= o.y
+        return self
+
+    def __imatmul__(self, o: 'vec2') -> 'vec2':
+        self.x %= o.x
+        self.y %= o.y
         return self
     
     def __neg__(self) -> 'vec2':
@@ -102,6 +110,9 @@ class vec2:
     
     def tuple(self) -> tuple:
         return self.x, self.y
+
+    def copy(self) -> 'vec2':
+        return vec2(self.x, self.y)
 
 
 class vec3:
