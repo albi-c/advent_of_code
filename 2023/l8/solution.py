@@ -30,16 +30,6 @@ def get_moves_to_z(pos: str) -> int:
         pos = nodes[pos][0 if move == "L" else 1]
 
 
-def get_multi_moves(positions: list[str]) -> int:
-    moves = 0
-    for move in itertools.cycle(directions):
-        if all(pos.endswith("Z") for pos in positions):
-            return moves
-
-        moves += 1
-        positions = [nodes[pos][0 if move == "L" else 1] for pos in positions]
-
-
 print(get_moves("AAA", "ZZZ"))
 
 
