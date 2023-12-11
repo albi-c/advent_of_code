@@ -1,32 +1,11 @@
 from advent import Advent, ivec2
 
-import glm
 import itertools
 
 
 advent = Advent()
 
 data: list[list[bool]] = [[ch == "#" for ch in row] for row in advent.read.lines()()]
-
-# i = 0
-# while i < len(data):
-#     if not any(data[i]):
-#         data.insert(i, [False for _ in range(len(data[0]))])
-#         i += 1
-#     i += 1
-#
-# i = 0
-# while i < len(data[0]):
-#     if not any(row[i] for row in data):
-#         for row in data:
-#             row.insert(i, False)
-#         i += 1
-#     i += 1
-#
-# galaxies = [ivec2(x, y) for x, y in itertools.product(range(len(data[0])), range(len(data))) if data[y][x]]
-#
-#
-# print(sum(sum(abs(a - b)) for a, b in itertools.combinations(galaxies, 2)))
 
 expansions_row: list[int] = []
 expansions_col: list[int] = []
