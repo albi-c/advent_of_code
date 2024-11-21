@@ -1,40 +1,51 @@
-from ..advent import Advent
+import functools
 
-advent = Advent(22, 2)
+from advent import Advent
 
-deck1, deck2 = [list(map(int, block.splitlines()[1:])) for block in advent.read.blocks()]
+deck1, deck2 = (tuple(map(int, block.splitlines()[1:])) for block in Advent().read.blocks()())
 
-def score(deck):
-    return sum([n * (i + 1) for i, n in enumerate(deck[::-1])])
 
-def combat(d1, d2):
-    rounds = set()
+type Deck = tuple[int, ...]
+
+
+def score(deck: Deck) -> int:
+    return sum(n * i for i, n in enumerate(reversed(deck), start=1))
+
+
+@functools.cache
+def combat(d1: Deck, d2: Deck) -> tuple[int, Deck]:
+    seen: set[tuple[Deck, Deck]] = set()
 
     while len(d1) != 0 and len(d2) != 0:
-        if (tuple(d1), tuple(d2)) in rounds:
-            return 1, score(d1)
-        
-        rounds.add((tuple(d1), tuple(d2)))
-        
-        c1 = d1.pop(0)
-        c2 = d2.pop(0)
+        state = (d1, d2)
+        if state in seen:
+            return 1, d1
+        seen.add(state)
+
+        c1 = d1[0]
+        d1 = d1[1:]
+
+        c2 = d2[0]
+        d2 = d2[1:]
 
         if len(d1) >= c1 and len(d2) >= c2:
-            w, _ = combat(d1.copy(), d2.copy())
+            w, _ = combat(d1[:c1], d2[:c2])
 
             if w == 1:
-                d1 += [c1, c2]
+                d1 = d1 + (c1, c2)
             else:
-                d2 += [c2, c1]
+                d2 = d2 + (c2, c1)
+
         else:
             if c1 > c2:
-                d1 += [c1, c2]
+                d1 = d1 + (c1, c2)
             else:
-                d2 += [c2, c1]
-    
-    if len(d1) == 0:
-        return 2, score(d2)
-    else:
-        return 1, score(d1)
+                d2 = d2 + (c2, c1)
 
-advent.solution(combat(deck1, deck2)[1])
+    if len(d1) == 0:
+        return 2, d2
+    else:
+        return 1, d1
+
+
+print(score(combat(deck1, deck2)[1]))
