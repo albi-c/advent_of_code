@@ -1,45 +1,83 @@
+from __future__ import annotations
+
 from advent import Advent
-from sqlalchemy.sql.coercions import expect
+from typing import Iterable
+from dataclasses import dataclass
+import itertools
 
-type Cups = tuple[int, ...]
+
+class IndexedLinkedList:
+    @dataclass(slots=True)
+    class Node:
+        next: IndexedLinkedList.Node
+        value: int
+
+        def get_next(self, n: int) -> IndexedLinkedList.Node:
+            node = self
+            for _ in range(n):
+                node = node.next
+            return node
+
+    head: Node
+    _lookup: list[Node]
+
+    def __init__(self, values: Iterable[int], maximum_value: int):
+        head = None
+        tail = None
+        lookup: list[IndexedLinkedList.Node] = [None for _ in range(maximum_value + 1)]
+        for val in values:
+            assert val >= 0
+            if head is None:
+                head = tail = self.Node(None, val)
+                lookup[val] = head
+            else:
+                node = self.Node(None, val)
+                tail.next = node
+                tail = node
+                lookup[val] = node
+        tail.next = head
+        self.head = head
+        self._lookup = lookup
+
+    def get(self, value: int) -> Node:
+        return self._lookup[value]
 
 
-data = tuple(map(int, Advent().read())) + tuple(range(10, 1000001))
+type Cups = IndexedLinkedList
+type Cup = IndexedLinkedList.Node
+
+
+data = IndexedLinkedList(itertools.chain(map(int, Advent().read()), range(10, 1000001)), 1000000)
 
 min_value = 1
 max_value = 1000000
 
 
-def do_round(cups: Cups, current: int) -> tuple[Cups, int]:
-    current_label = cups[current]
-    cups = cups[current + 1:] + cups[:current + 1]
-    three = cups[:3]
-    cups = cups[3:]
+def do_round(cups: Cups):
+    start = cups.head.next
+    end = cups.head.get_next(3)
+    values = (start.value, start.next.value, end.value)
+    cups.head.next = end.next
 
-    destination_label = current_label
+    dst = cups.head.value
     while True:
-        destination_label -= 1
-        if destination_label < min_value:
-            destination_label = max_value
+        dst -= 1
+        if dst < min_value:
+            dst = max_value
+        if dst in values:
+            continue
 
-        try:
-            destination = cups.index(destination_label)
-        except ValueError:
-            pass
-        else:
-            break
+        destination = cups.get(dst)
+        end.next = destination.next
+        destination.next = start
 
-    cups = three + cups[destination+1:] + cups[:destination+1]
-    current = cups.index(current_label) + 1
-    if current > max_value:
-        current = min_value
+        break
 
-    return cups, current
+    cups.head = cups.head.next
 
 
-current_index = 0
-for _ in range(100):
-    data, current_index = do_round(data, current_index)
+for _ in range(10000000):
+    do_round(data)
 
-index = data.index(1)
-print(data[(index + 1) % len(data)] * data[(index + 2) % len(data)])
+base = data.get(1)
+print(base.next.value * base.next.next.value)
