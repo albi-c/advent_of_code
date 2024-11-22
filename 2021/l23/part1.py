@@ -55,14 +55,20 @@ def top_row_move(top_row: TopRow, pos: int, target: int) -> int | None:
 
 
 @functools.cache
-def solve(top_row: TopRow, rows: Rows, energy: int, seen: HashableSet[Position]) -> int:
-    if all(all(a is not None and a.target == i for i, a in enumerate(row)) for row in rows):
-        return energy
-
+def solve_r(top_row: TopRow, rows: Rows, energy: int, seen: HashableSet[Position]) -> int:
     position = (top_row, rows)
     if position in seen:
         return 1 << 30
     seen.add(position)
+    value = solve(top_row, rows, energy, seen)
+    seen.remove(position)
+    return value
+
+
+@functools.cache
+def solve(top_row: TopRow, rows: Rows, energy: int, seen: HashableSet[Position]) -> int:
+    if all(all(a is not None and a.target == i for i, a in enumerate(row)) for row in rows):
+        return energy
 
     best = 1 << 30
 
@@ -73,13 +79,13 @@ def solve(top_row: TopRow, rows: Rows, energy: int, seen: HashableSet[Position])
                 if (cost := top_row_move(top_row_changed, i, NEIGHBORS_B2T[a.target])) is not None:
                     cost += 2
                     rows_changed = tuple_with(rows, 1, tuple_with(rows[1], a.target, a))
-                    best = min(best, solve(top_row_changed, rows_changed, energy + a.cost * cost, seen))
+                    best = min(best, solve_r(top_row_changed, rows_changed, energy + a.cost * cost, seen))
             elif rows[1][a.target] == a:
                 top_row_changed = tuple_with(top_row, i, None)
                 if (cost := top_row_move(top_row_changed, i, NEIGHBORS_B2T[a.target])) is not None:
                     cost += 1
                     rows_changed = tuple_with(rows, 0, tuple_with(rows[0], a.target, a))
-                    best = min(best, solve(top_row_changed, rows_changed, energy + a.cost * cost, seen))
+                    best = min(best, solve_r(top_row_changed, rows_changed, energy + a.cost * cost, seen))
 
     for i in range(4):
         if all(row[i] is not None and row[i].target == i for row in rows):
@@ -93,15 +99,15 @@ def solve(top_row: TopRow, rows: Rows, energy: int, seen: HashableSet[Position])
                     cost += 1
                     top_row_changed = tuple_with(top_row, target, a)
                     rows_changed = tuple_with(rows, 0, tuple_with(rows[0], i, None))
-                    best = min(best, solve(top_row_changed, rows_changed, energy + a.cost * cost, seen))
+                    best = min(best, solve_r(top_row_changed, rows_changed, energy + a.cost * cost, seen))
 
-        elif (a := rows[1][i]) is not None:
+        elif (a := rows[1][i]) is not None and rows[1][i].target != i:
             for target in TOP_ROW_TARGETS:
                 if (cost := top_row_move(top_row, pos, target)) is not None:
                     cost += 2
                     top_row_changed = tuple_with(top_row, target, a)
                     rows_changed = tuple_with(rows, 1, tuple_with(rows[1], i, None))
-                    best = min(best, solve(top_row_changed, rows_changed, energy + a.cost * cost, seen))
+                    best = min(best, solve_r(top_row_changed, rows_changed, energy + a.cost * cost, seen))
 
     return best
 
