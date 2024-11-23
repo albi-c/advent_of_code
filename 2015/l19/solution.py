@@ -1,7 +1,5 @@
 from advent import Advent
 
-import functools
-
 
 conversions_str, input_str = Advent().read.blocks()()
 conversions = {}
