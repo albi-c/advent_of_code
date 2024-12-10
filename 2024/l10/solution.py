@@ -1,37 +1,25 @@
-from advent import Advent, Grid, ivec2
+from advent import Advent, Grid, ivec2, any_sum, set_sum
 
 
-grid = Grid(Advent().read(), int)
+grid = Grid.parse(Advent().read(), int)
 
 
 def find_paths(pos: ivec2) -> set[ivec2]:
     if grid[pos] == 9:
         return {pos}
 
-    paths = set()
-    for p in grid.neighbors(pos, False):
-        if grid[p] == grid[pos] + 1:
-            paths |= find_paths(p)
-    return paths
+    return set_sum(map(find_paths, grid.neighbors_search(pos, grid[pos] + 1)))
 
 
 def find_distinct_paths(pos: ivec2, path: tuple[ivec2, ...]) -> set[tuple[ivec2, ...]]:
     if grid[pos] == 9:
         return {path}
 
-    paths = set()
-    for p in grid.neighbors(pos, False):
-        if grid[p] == grid[pos] + 1:
-            paths |= find_distinct_paths(p, path + (p,))
-    return paths
+    return set_sum(find_distinct_paths(p, path + (p,)) for p in grid.neighbors_search(pos, grid[pos] + 1))
 
 
-score = 0
-score2 = 0
-for x in range(grid.width):
-    for y in range(grid.height):
-        if grid[x, y] == 0:
-            score += len(find_paths(ivec2(x, y)))
-            score2 += len(find_distinct_paths(ivec2(x, y), ()))
-print(score)
-print(score2)
+result = any_sum(ivec2(len(find_paths(position)),
+                       len(find_distinct_paths(position, ())))
+                 for position in grid.search(0))
+print(result.x)
+print(result.y)
