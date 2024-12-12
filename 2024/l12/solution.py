@@ -60,6 +60,9 @@ for i, area in enumerate(areas, start=1):
     corners += sum(1 for _ in groups_border.subgrid_search(Grid([[0, 0], [i, 0]]), func))
     corners += sum(1 for _ in groups_border.subgrid_search(Grid([[0, 0], [0, i]]), func))
 
+    corners += 2 * sum(1 for _ in groups_border.subgrid_search(Grid([[0, i], [i, 0]]), func))
+    corners += 2 * sum(1 for _ in groups_border.subgrid_search(Grid([[i, 0], [0, i]]), func))
+
     result2 += area * corners
 
 print(result2)
